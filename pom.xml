@@ -10,7 +10,7 @@
     <packaging>war</packaging>
     <description>A Spring Framework application based on JSP, Spring MVC, Spring Data JPA, Hibernate and JDBC</description>
     <url>https://spring-petclinic.github.io/</url>
-
+    <!--THIS REPO IS MODIFIED BY DEVOPS SHACK https://www.youtube.com/@devopsshack -->
     <properties>
 
         <!-- Generic properties -->
@@ -588,5 +588,5 @@
             <url>https://repo.spring.io/milestone</url>
         </repository>
     </repositories>
-
+<!--THIS REPO IS MODIFIED BY DEVOPS SHACK https://www.youtube.com/@devopsshack -->
 </project>
