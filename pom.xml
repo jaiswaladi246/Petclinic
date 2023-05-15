@@ -79,7 +79,7 @@
         <!-- Docker image -->
         <docker.jib-maven-plugin.version>2.6.0</docker.jib-maven-plugin.version>
         <docker.image.prefix>springcommunity</docker.image.prefix>
-        
+        </properties>
         <properties>
    
     <jacoco.version>0.8.6</jacoco.version>
