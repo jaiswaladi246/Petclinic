@@ -27,10 +27,10 @@ pipeline {
       }
     }
     
-    stage('Deploy to Tomcat') {
-      steps {
-        // Deploy to Tomcat
-        sh 'sudo cp -r target/petclinic.war * /opt/apache-tomcat-9.0.65/webapps'
+    // stage('Deploy to Tomcat') {
+    //   steps {
+    //     // Deploy to Tomcat
+    //     sh 'sudo cp -r target/petclinic.war * /opt/apache-tomcat-9.0.65/webapps'
       }
     }
   }
