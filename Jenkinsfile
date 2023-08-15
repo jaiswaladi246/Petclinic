@@ -30,7 +30,7 @@ pipeline {
     stage('Deploy to Tomcat') {
       steps {
         // Deploy to Tomcat
-        sh 'sudo cp target/petclinic.war * /opt/apache-tomcat-9.0.65/webapps/'
+        sh 'sudo cp target/petclinic.war * /opt/apache-tomcat-9.0.65/'
       }
     }
   }
