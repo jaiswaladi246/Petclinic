@@ -30,7 +30,7 @@ pipeline {
     stage('Deploy to Tomcat') {
       steps {
         // Deploy to Tomcat
-        sh 'cp target/webapp.war /path/to/tomcat/webapps/'
+        sh 'cp target/petclinic.war /path/to/tomcat/webapps/'
       }
     }
   }
