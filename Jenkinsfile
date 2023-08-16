@@ -18,13 +18,34 @@ pipeline {
          Maven compile
         sh 'mvn compile'
       }
-    }
+  
     
     stage('Maven Package') {
       steps {
          Maven package
         sh 'mvn package'
       }
+
+
+    stages {
+        stage('Git Checkout') {
+            steps {
+                git branch: 'feature-2', url: 'https://github.com/jaiswaladi246/Petclinic.git'
+            }
+        }
+        
+        stage('Compile') {
+            steps {
+               sh "mvn clean compile"
+            }
+        }
+        
+        stage('Build') {
+            steps {
+               sh "mvn clean package -DskipTests=true"
+            }
+        }
+        
     }
     
   }
