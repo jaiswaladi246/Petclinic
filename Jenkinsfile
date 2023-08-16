@@ -1,59 +1,34 @@
 pipeline {
-  agent any
-  
-  tools{
-        maven 'M2_HOME'
-        }
-  
-  stages {
-    stage('Git Checkout') {
-      steps {
-         Git checkout
-        git branch: 'feature-2', url: 'https://github.com/adedokunk/Petclinic.git'
-      }
-    }
-    
-    stage('Maven Compile') {
-      steps {
-         Maven compile
-        sh 'mvn compile'
-      }
-  
-    
-    stage('Maven Package') {
-      steps {
-         Maven package
-        sh 'mvn package'
-      }
+    agent any
 
+    tools {
+        // Define the Maven tool using its name
+        maven 'M2_HOME' // Make sure 'Maven' matches the tool configuration in Jenkins
+    }
 
     stages {
         stage('Git Checkout') {
             steps {
-                git branch: 'feature-2', url: 'https://github.com/jaiswaladi246/Petclinic.git'
+                // Corrected 'Git checkout' to 'git'
+                git branch: 'feature-2', url: 'https://github.com/adedokunk/Petclinic.git'
             }
         }
-        
-        stage('Compile') {
+
+        stage('Maven Compile') {
             steps {
-               sh "mvn clean compile"
+                // Corrected 'Maven compile' to 'sh'
+                sh 'mvn compile'
             }
         }
-        
-        stage('Build') {
+
+        stage('Maven Package') {
             steps {
-               sh "mvn clean package -DskipTests=true"
+                // Corrected 'Maven package' to 'sh'
+                sh 'mvn package'
             }
         }
-        
     }
-    
-  }
- }
-      
-  
- 
-   
+}
 
 
 
