@@ -470,15 +470,9 @@
                     </to>
                 </configuration>
             </plugin>
-<plugin>
-  <groupId>org.jacoco</groupId>
-  <artifactId>jacoco-maven-plugin</artifactId>
-  <version>0.8.6</version>
-</plugin>
-<plugin>
     <groupId>org.jacoco</groupId>
     <artifactId>jacoco-maven-plugin</artifactId>
-    <version>${jacoco.version}</version>
+    <version>0.8.6</version>
     <executions>
         <execution>
             <id>jacoco-initialize</id>
