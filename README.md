@@ -7,6 +7,7 @@
 This project allows the Spring community to maintain a Petclinic version with a plain old **Spring Framework configuration**
 and with a **3-layer architecture** (i.e. presentation --> service --> repository).
 The "canonical" implementation is now based on Spring Boot, Thymeleaf and [aggregate-oriented domain]([https://github.com/spring-projects/spring-petclinic/pull/200). 
+#c
 
 ## Understanding the Spring Petclinic application with a few diagrams.
 
