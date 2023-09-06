@@ -48,8 +48,8 @@ pipeline {
                 script {
                     withDockerRegistry(credentialsId: '16f75b5c-c825-4163-8890-28e174b31deb', toolName: 'docker'){
                         sh "docker build -t petclinic ."
-                        sh "docker tag petclinic nsivareddy/pet-clinic:latest"
-                        sh "docker push nsivareddy/pet-clinic:latest"
+                        sh "docker tag petclinic nsivareddy/pet-clinic:v1"
+                        sh "docker push nsivareddy/pet-clinic:v1"
                     }
                 }
                
