@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Git Checkout') {
             steps {
-                git branch: 'main', changelog: false, poll: false, url: 'https://github.com/Reddy999eee/Petclinic.git'
+                git branch: 'test', changelog: false, poll: false, url: 'https://github.com/Reddy999eee/Petclinic.git'
             }
         }
         stage('Compile') {
@@ -40,27 +40,12 @@ pipeline {
                 dependencyCheck additionalArguments: ' --scan ./ ', odcInstallation: 'DP-check'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
-        }
-        
-        
-        stage ('Docker Tag & Push') {
-            steps {
-                script {
-                    withDockerRegistry(credentialsId: '16f75b5c-c825-4163-8890-28e174b31deb', toolName: 'docker'){
-                        sh "docker build -t petclinic ."
-                        sh "docker tag petclinic nsivareddy/pet-clinic:v1"
-                        sh "docker push nsivareddy/pet-clinic:v1"
-                    }
-                }
-               
-            }
-        }
-        
-        stage('Docker Deploy') {
-            steps {
-                sh " docker run -d --name Pet-Clinic -p 8082:8082 nsivareddy/pet-clinic:latest "
-            }
-        }
+       }
+       stage ('Install') {
+           steps{
+              sh 'mvn clean install'
+                   }
+             }
         
         stage ('Clean WS') {
             steps{
