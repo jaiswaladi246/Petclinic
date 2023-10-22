@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JdbcPetRepositoryImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Spring Framework Petclinic</a> &gt; <a href="index.source.html" class="el_package">org.springframework.samples.petclinic.repository.jdbc</a> &gt; <span class="el_source">JdbcPetRepositoryImpl.java</span></div><h1>JdbcPetRepositoryImpl.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2002-2013 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.springframework.samples.petclinic.repository.jdbc;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.samples.petclinic.model.Owner;
+import org.springframework.samples.petclinic.model.Pet;
+import org.springframework.samples.petclinic.model.PetType;
+import org.springframework.samples.petclinic.repository.OwnerRepository;
+import org.springframework.samples.petclinic.repository.PetRepository;
+import org.springframework.samples.petclinic.util.EntityUtils;
+import org.springframework.stereotype.Repository;
+
+/**
+ * @author Ken Krebs
+ * @author Juergen Hoeller
+ * @author Rob Harrop
+ * @author Sam Brannen
+ * @author Thomas Risberg
+ * @author Mark Fisher
+ */
+@Repository
+public class JdbcPetRepositoryImpl implements PetRepository {
+
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    private SimpleJdbcInsert insertPet;
+
+    private OwnerRepository ownerRepository;
+
+    @Autowired
+<span class="fc" id="L57">    public JdbcPetRepositoryImpl(DataSource dataSource, OwnerRepository ownerRepository) {</span>
+<span class="fc" id="L58">        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);</span>
+
+<span class="fc" id="L60">        this.insertPet = new SimpleJdbcInsert(dataSource)</span>
+<span class="fc" id="L61">            .withTableName(&quot;pets&quot;)</span>
+<span class="fc" id="L62">            .usingGeneratedKeyColumns(&quot;id&quot;);</span>
+
+<span class="fc" id="L64">        this.ownerRepository = ownerRepository;</span>
+<span class="fc" id="L65">    }</span>
+
+    @Override
+    public List&lt;PetType&gt; findPetTypes() {
+<span class="fc" id="L69">        Map&lt;String, Object&gt; params = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L70">        return this.namedParameterJdbcTemplate.query(</span>
+            &quot;SELECT id, name FROM types ORDER BY name&quot;,
+            params,
+<span class="fc" id="L73">            BeanPropertyRowMapper.newInstance(PetType.class));</span>
+    }
+
+    @Override
+    public Pet findById(int id) {
+        Integer ownerId;
+        try {
+<span class="fc" id="L80">            Map&lt;String, Object&gt; params = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L81">            params.put(&quot;id&quot;, id);</span>
+<span class="fc" id="L82">            ownerId = this.namedParameterJdbcTemplate.queryForObject(&quot;SELECT owner_id FROM pets WHERE id=:id&quot;, params, Integer.class);</span>
+<span class="nc" id="L83">        } catch (EmptyResultDataAccessException ex) {</span>
+<span class="nc" id="L84">            throw new ObjectRetrievalFailureException(Pet.class, id);</span>
+<span class="fc" id="L85">        }</span>
+<span class="fc" id="L86">        Owner owner = this.ownerRepository.findById(ownerId);</span>
+<span class="fc" id="L87">        return EntityUtils.getById(owner.getPets(), Pet.class, id);</span>
+    }
+
+    @Override
+    public void save(Pet pet) {
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        if (pet.isNew()) {</span>
+<span class="fc" id="L93">            Number newKey = this.insertPet.executeAndReturnKey(</span>
+<span class="fc" id="L94">                createPetParameterSource(pet));</span>
+<span class="fc" id="L95">            pet.setId(newKey.intValue());</span>
+<span class="fc" id="L96">        } else {</span>
+<span class="fc" id="L97">            this.namedParameterJdbcTemplate.update(</span>
+                &quot;UPDATE pets SET name=:name, birth_date=:birth_date, type_id=:type_id, &quot; +
+                    &quot;owner_id=:owner_id WHERE id=:id&quot;,
+<span class="fc" id="L100">                createPetParameterSource(pet));</span>
+        }
+<span class="fc" id="L102">    }</span>
+
+    /**
+     * Creates a {@link MapSqlParameterSource} based on data values from the supplied {@link Pet} instance.
+     */
+    private MapSqlParameterSource createPetParameterSource(Pet pet) {
+<span class="fc" id="L108">        return new MapSqlParameterSource()</span>
+<span class="fc" id="L109">            .addValue(&quot;id&quot;, pet.getId())</span>
+<span class="fc" id="L110">            .addValue(&quot;name&quot;, pet.getName())</span>
+<span class="fc" id="L111">            .addValue(&quot;birth_date&quot;, pet.getBirthDate())</span>
+<span class="fc" id="L112">            .addValue(&quot;type_id&quot;, pet.getType().getId())</span>
+<span class="fc" id="L113">            .addValue(&quot;owner_id&quot;, pet.getOwner().getId());</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

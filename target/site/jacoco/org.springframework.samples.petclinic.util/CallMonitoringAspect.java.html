@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CallMonitoringAspect.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Spring Framework Petclinic</a> &gt; <a href="index.source.html" class="el_package">org.springframework.samples.petclinic.util</a> &gt; <span class="el_source">CallMonitoringAspect.java</span></div><h1>CallMonitoringAspect.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2002-2013 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.springframework.samples.petclinic.util;
+
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.jmx.export.annotation.ManagedOperation;
+import org.springframework.jmx.export.annotation.ManagedResource;
+import org.springframework.util.StopWatch;
+
+/**
+ * Simple aspect that monitors call count and call invocation time. It uses JMX annotations and therefore can be
+ * monitored using any JMX console such as the jConsole
+ * &lt;p/&gt;
+ * This is only useful if you use JPA or JDBC.  Spring-data-jpa doesn't have any correctly annotated classes to join on
+ *
+ * @author Rob Harrop
+ * @author Juergen Hoeller
+ * @author Michael Isvy
+ * @since 2.5
+ */
+@ManagedResource(&quot;petclinic:type=CallMonitor&quot;)
+@Aspect
+<span class="nc" id="L39">public class CallMonitoringAspect {</span>
+
+<span class="nc" id="L41">    private boolean enabled = true;</span>
+
+<span class="nc" id="L43">    private int callCount = 0;</span>
+
+<span class="nc" id="L45">    private long accumulatedCallTime = 0;</span>
+
+    @ManagedAttribute
+    public boolean isEnabled() {
+<span class="nc" id="L49">        return enabled;</span>
+    }
+
+    @ManagedAttribute
+    public void setEnabled(boolean enabled) {
+<span class="nc" id="L54">        this.enabled = enabled;</span>
+<span class="nc" id="L55">    }</span>
+
+    @ManagedOperation
+    public void reset() {
+<span class="nc" id="L59">        this.callCount = 0;</span>
+<span class="nc" id="L60">        this.accumulatedCallTime = 0;</span>
+<span class="nc" id="L61">    }</span>
+
+    @ManagedAttribute
+    public int getCallCount() {
+<span class="nc" id="L65">        return callCount;</span>
+    }
+
+    @ManagedAttribute
+    public long getCallTime() {
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        if (this.callCount &gt; 0)</span>
+<span class="nc" id="L71">            return this.accumulatedCallTime / this.callCount;</span>
+        else
+<span class="nc" id="L73">            return 0;</span>
+    }
+
+
+    @Around(&quot;within(@org.springframework.stereotype.Repository *)&quot;)
+    public Object invoke(ProceedingJoinPoint joinPoint) throws Throwable {
+<span class="nc bnc" id="L79" title="All 2 branches missed.">        if (this.enabled) {</span>
+<span class="nc" id="L80">            StopWatch sw = new StopWatch(joinPoint.toShortString());</span>
+
+<span class="nc" id="L82">            sw.start(&quot;invoke&quot;);</span>
+            try {
+<span class="nc" id="L84">                return joinPoint.proceed();</span>
+            } finally {
+<span class="nc" id="L86">                sw.stop();</span>
+<span class="nc" id="L87">                synchronized (this) {</span>
+<span class="nc" id="L88">                    this.callCount++;</span>
+<span class="nc" id="L89">                    this.accumulatedCallTime += sw.getTotalTimeMillis();</span>
+<span class="nc" id="L90">                }</span>
+            }
+        } else {
+<span class="nc" id="L93">            return joinPoint.proceed();</span>
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

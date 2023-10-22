@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JdbcVisitRepositoryImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Spring Framework Petclinic</a> &gt; <a href="index.source.html" class="el_package">org.springframework.samples.petclinic.repository.jdbc</a> &gt; <span class="el_source">JdbcVisitRepositoryImpl.java</span></div><h1>JdbcVisitRepositoryImpl.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2002-2013 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.springframework.samples.petclinic.repository.jdbc;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.samples.petclinic.model.Visit;
+import org.springframework.samples.petclinic.repository.VisitRepository;
+import org.springframework.stereotype.Repository;
+
+import javax.sql.DataSource;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * A simple JDBC-based implementation of the {@link VisitRepository} interface.
+ *
+ * @author Ken Krebs
+ * @author Juergen Hoeller
+ * @author Rob Harrop
+ * @author Sam Brannen
+ * @author Thomas Risberg
+ * @author Mark Fisher
+ * @author Michael Isvy
+ */
+@Repository
+public class JdbcVisitRepositoryImpl implements VisitRepository {
+
+    private NamedParameterJdbcTemplate jdbcTemplate;
+
+    private SimpleJdbcInsert insertVisit;
+
+    @Autowired
+<span class="fc" id="L51">    public JdbcVisitRepositoryImpl(DataSource dataSource) {</span>
+<span class="fc" id="L52">        this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);</span>
+
+<span class="fc" id="L54">        this.insertVisit = new SimpleJdbcInsert(dataSource)</span>
+<span class="fc" id="L55">            .withTableName(&quot;visits&quot;)</span>
+<span class="fc" id="L56">            .usingGeneratedKeyColumns(&quot;id&quot;);</span>
+<span class="fc" id="L57">    }</span>
+
+
+    @Override
+    public void save(Visit visit) {
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">        if (visit.isNew()) {</span>
+<span class="fc" id="L63">            Number newKey = this.insertVisit.executeAndReturnKey(</span>
+<span class="fc" id="L64">                createVisitParameterSource(visit));</span>
+<span class="fc" id="L65">            visit.setId(newKey.intValue());</span>
+<span class="fc" id="L66">        } else {</span>
+<span class="nc" id="L67">            throw new UnsupportedOperationException(&quot;Visit update not supported&quot;);</span>
+        }
+<span class="fc" id="L69">    }</span>
+
+
+    /**
+     * Creates a {@link MapSqlParameterSource} based on data values from the supplied {@link Visit} instance.
+     */
+    private MapSqlParameterSource createVisitParameterSource(Visit visit) {
+<span class="fc" id="L76">        return new MapSqlParameterSource()</span>
+<span class="fc" id="L77">            .addValue(&quot;id&quot;, visit.getId())</span>
+<span class="fc" id="L78">            .addValue(&quot;visit_date&quot;, visit.getDate())</span>
+<span class="fc" id="L79">            .addValue(&quot;description&quot;, visit.getDescription())</span>
+<span class="fc" id="L80">            .addValue(&quot;pet_id&quot;, visit.getPet().getId());</span>
+    }
+
+    @Override
+    public List&lt;Visit&gt; findByPetId(Integer petId) {
+<span class="fc" id="L85">        Map&lt;String, Object&gt; params = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L86">        params.put(&quot;id&quot;, petId);</span>
+<span class="fc" id="L87">        JdbcPet pet = this.jdbcTemplate.queryForObject(</span>
+                &quot;SELECT id, name, birth_date, type_id, owner_id FROM pets WHERE id=:id&quot;,
+                params,
+                new JdbcPetRowMapper());
+
+<span class="fc" id="L92">        List&lt;Visit&gt; visits = this.jdbcTemplate.query(</span>
+            &quot;SELECT id as visit_id, visit_date, description FROM visits WHERE pet_id=:id&quot;,
+            params, new JdbcVisitRowMapper());
+
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        for (Visit visit: visits) {</span>
+<span class="fc" id="L97">            visit.setPet(pet);</span>
+<span class="fc" id="L98">        }</span>
+
+<span class="fc" id="L100">        return visits;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

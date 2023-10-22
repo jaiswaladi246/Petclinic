@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PetclinicInitializer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Spring Framework Petclinic</a> &gt; <a href="index.source.html" class="el_package">org.springframework.samples.petclinic</a> &gt; <span class="el_source">PetclinicInitializer.java</span></div><h1>PetclinicInitializer.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2002-2016 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.springframework.samples.petclinic;
+
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.XmlWebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.support.AbstractDispatcherServletInitializer;
+
+import javax.servlet.Filter;
+import javax.servlet.ServletContext;
+
+
+/**
+ * In Servlet 3.0+ environments, this class replaces the traditional {@code web.xml}-based approach in order to configure the
+ * {@link ServletContext} programmatically.
+ * &lt;p/&gt;
+ * Create the Spring &quot;&lt;strong&gt;root&lt;/strong&gt;&quot; application context.&lt;br/&gt;
+ * Register a {@link DispatcherServlet}  in the servlet context.&lt;br/&gt;
+ * For both servlets, register a {@link CharacterEncodingFilter}.
+ * &lt;p/&gt;
+ *
+ * @author Antoine Rey
+ */
+<span class="nc" id="L39">public class PetclinicInitializer extends AbstractDispatcherServletInitializer {</span>
+
+    /**
+     * Spring profile used to choose the persistence layer implementation.
+     * &lt;p&gt;
+     * When using Spring jpa, use: jpa
+     * When using Spring JDBC, use: jdbc
+     * When using Spring Data JPA, use: spring-data-jpa
+     * &lt;p/&gt;
+     * &lt;p&gt;
+     * You also may use the -Dspring.profiles.active=jdbc VM options to change
+     * default jpa Spring profile.
+     */
+    private static final String SPRING_PROFILE = &quot;jpa&quot;;
+
+    @Override
+    protected WebApplicationContext createRootApplicationContext() {
+<span class="nc" id="L56">        XmlWebApplicationContext rootAppContext = new XmlWebApplicationContext();</span>
+<span class="nc" id="L57">        rootAppContext.setConfigLocations(&quot;classpath:spring/business-config.xml&quot;, &quot;classpath:spring/tools-config.xml&quot;);</span>
+<span class="nc" id="L58">        rootAppContext.getEnvironment().setDefaultProfiles(SPRING_PROFILE);</span>
+<span class="nc" id="L59">        return rootAppContext;</span>
+    }
+
+    @Override
+    protected WebApplicationContext createServletApplicationContext() {
+<span class="nc" id="L64">        XmlWebApplicationContext webAppContext = new XmlWebApplicationContext();</span>
+<span class="nc" id="L65">        webAppContext.setConfigLocation(&quot;classpath:spring/mvc-core-config.xml&quot;);</span>
+<span class="nc" id="L66">        return webAppContext;</span>
+    }
+
+    @Override
+    protected String[] getServletMappings() {
+<span class="nc" id="L71">        return new String[]{&quot;/&quot;};</span>
+    }
+
+    @Override
+    protected Filter[] getServletFilters() {
+        // Used to provide the ability to enter Chinese characters inside the Owner Form
+<span class="nc" id="L77">        CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter(&quot;UTF-8&quot;, true);</span>
+<span class="nc" id="L78">        return new Filter[]{characterEncodingFilter};</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

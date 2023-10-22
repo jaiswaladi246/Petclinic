@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OneToManyResultSetExtractor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Spring Framework Petclinic</a> &gt; <a href="index.source.html" class="el_package">org.springframework.samples.petclinic.repository.jdbc</a> &gt; <span class="el_source">OneToManyResultSetExtractor.java</span></div><h1>OneToManyResultSetExtractor.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2008-2014 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.springframework.samples.petclinic.repository.jdbc;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.util.Assert;
+
+/**
+ * An abstract results extractor for row mapping operations that map multiple rows to a single root object. This is
+ * useful when joining a one-to-many relationship where there can be multiple child rows returned per parent root.
+ * &lt;p&gt;
+ * It's assumed that the root type R table has a primary key (id) of type K and that the child type C table has a
+ * foreign key of type K referencing the root table's primary key.
+ * &lt;p&gt;
+ * For example, consider the relationship: &quot;a Customer has one-to-many Addresses&quot;. When joining the Customer table with
+ * the Address table to build a Customer object, multiple rows would be returned for a Customer if it has more than one
+ * Address. This extractor is useful in that case.
+ * &lt;p&gt;
+ * This class comes from the Spring Data JDBC Extensions project that has been archived in 2019:
+ * https://github.com/spring-projects/spring-data-jdbc-ext
+ *
+ * @author Thomas Risberg
+ * @author Keith Donald
+ * @author Oliver Gierke
+ * @since 1.0
+ */
+public abstract class OneToManyResultSetExtractor&lt;R, C, K&gt; implements ResultSetExtractor&lt;List&lt;R&gt;&gt; {
+
+<span class="fc" id="L50">	public enum ExpectedResults {</span>
+<span class="fc" id="L51">		ANY,</span>
+<span class="fc" id="L52">		ONE_AND_ONLY_ONE,</span>
+<span class="fc" id="L53">		ONE_OR_NONE,</span>
+<span class="fc" id="L54">		AT_LEAST_ONE</span>
+	}
+
+	protected final ExpectedResults expectedResults;
+	protected final RowMapper&lt;R&gt; rootMapper;
+	protected final RowMapper&lt;C&gt; childMapper;
+
+	/**
+	 * Creates a new {@link OneToManyResultSetExtractor} from the given {@link RowMapper}s.
+	 *
+	 * @param rootMapper {@link RowMapper} to map the root entity, must not be {@literal null}.
+	 * @param childMapper {@link RowMapper} to map the root entities, must not be {@literal null}.
+	 */
+	public OneToManyResultSetExtractor(RowMapper&lt;R&gt; rootMapper, RowMapper&lt;C&gt; childMapper) {
+<span class="fc" id="L68">		this(rootMapper, childMapper, null);</span>
+<span class="fc" id="L69">	}</span>
+
+	/**
+	 * Creates a new {@link OneToManyResultSetExtractor} from the given {@link RowMapper}s and {@link ExpectedResults}.
+	 *
+	 * @param rootMapper {@link RowMapper} to map the root entity, must not be {@literal null}.
+	 * @param childMapper {@link RowMapper} to map the root entities, must not be {@literal null}.
+	 * @param expectedResults
+	 */
+<span class="fc" id="L78">	public OneToManyResultSetExtractor(RowMapper&lt;R&gt; rootMapper, RowMapper&lt;C&gt; childMapper, ExpectedResults expectedResults) {</span>
+
+<span class="fc" id="L80">		Assert.notNull(rootMapper, &quot;Root RowMapper must not be null!&quot;);</span>
+<span class="fc" id="L81">		Assert.notNull(childMapper, &quot;Child RowMapper must not be null!&quot;);</span>
+
+<span class="fc" id="L83">		this.childMapper = childMapper;</span>
+<span class="fc" id="L84">		this.rootMapper = rootMapper;</span>
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">		this.expectedResults = expectedResults == null ? ExpectedResults.ANY : expectedResults;</span>
+<span class="fc" id="L86">	}</span>
+
+	public List&lt;R&gt; extractData(ResultSet rs) throws SQLException {
+<span class="fc" id="L89">		List&lt;R&gt; results = new ArrayList&lt;R&gt;();</span>
+<span class="fc" id="L90">		int row = 0;</span>
+<span class="fc" id="L91">		boolean more = rs.next();</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		if (more) {</span>
+<span class="fc" id="L93">			row++;</span>
+		}
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		while (more) {</span>
+<span class="fc" id="L96">			R root = rootMapper.mapRow(rs, row);</span>
+<span class="fc" id="L97">			K primaryKey = mapPrimaryKey(rs);</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">			if (mapForeignKey(rs) != null) {</span>
+<span class="fc bfc" id="L99" title="All 4 branches covered.">				while (more &amp;&amp; primaryKey.equals(mapForeignKey(rs))) {</span>
+<span class="fc" id="L100">					addChild(root, childMapper.mapRow(rs, row));</span>
+<span class="fc" id="L101">					more = rs.next();</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">					if (more) {</span>
+<span class="fc" id="L103">						row++;</span>
+					}
+				}
+			}
+			else {
+<span class="fc" id="L108">				more = rs.next();</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">				if (more) {</span>
+<span class="fc" id="L110">					row++;</span>
+				}
+			}
+<span class="fc" id="L113">			results.add(root);</span>
+<span class="fc" id="L114">		}</span>
+<span class="pc bpc" id="L115" title="2 of 4 branches missed.">		if ((expectedResults == ExpectedResults.ONE_AND_ONLY_ONE || expectedResults == ExpectedResults.ONE_OR_NONE) &amp;&amp;</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">				results.size() &gt; 1) {</span>
+<span class="nc" id="L117">			throw new IncorrectResultSizeDataAccessException(1, results.size());</span>
+		}
+<span class="pc bpc" id="L119" title="2 of 4 branches missed.">		if ((expectedResults == ExpectedResults.ONE_AND_ONLY_ONE || expectedResults == ExpectedResults.AT_LEAST_ONE) &amp;&amp;</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">				results.size() &lt; 1) {</span>
+<span class="nc" id="L121">			throw new IncorrectResultSizeDataAccessException(1, 0);</span>
+		}
+<span class="fc" id="L123">		return results;</span>
+	}
+
+	/**
+	 * Map the primary key value to the required type.
+	 * This method must be implemented by subclasses.
+	 * This method should not call &lt;code&gt;next()&lt;/code&gt; on
+	 * the ResultSet; it is only supposed to map values of the current row.
+	 *
+	 * @param rs the ResultSet
+	 * @return the primary key value
+	 * @throws SQLException
+	 */
+	protected abstract K mapPrimaryKey(ResultSet rs) throws SQLException;
+
+	/**
+	 * Map the foreign key value to the required type.
+	 * This method must be implemented by subclasses.
+	 * This method should not call &lt;code&gt;next()&lt;/code&gt; on
+	 * the ResultSet; it is only supposed to map values of the current row.
+	 *
+	 * @param rs the ResultSet
+	 * @return the foreign key value
+	 * @throws SQLException
+	 */
+	protected abstract K mapForeignKey(ResultSet rs) throws SQLException;
+
+	/**
+	 * Add the child object to the root object
+	 * This method must be implemented by subclasses.
+	 *
+	 * @param root the Root object
+	 * @param child the Child object
+	 */
+	protected abstract void addChild(R root, C child);
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
