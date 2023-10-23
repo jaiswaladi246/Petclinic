@@ -293,7 +293,22 @@
         </dependency>
 
     </dependencies>
-
+    
+    <distributionManagement>
+	    <repository>
+	      <id>nexus</id>
+	      <name>Spring Framework Petclinic Nexus Repository</name>
+	      <url>http://localhost:51951/repository/Petclinic-releases/</url>
+	    </repository>
+	    
+	    <snapshotRepository>
+	      <id>nexus</id>
+	      <name>Spring Framework Petclinic Nexus Repository</name>
+	      <url>http://localhost:51951/repository/Petclinic-snapshots/</url>
+	    </snapshotRepository>
+	    
+    </distributionManagement>
+    
     <!-- Maven plugin versions are mentioned in order to guarantee the build reproducibility in the long term -->
     <build>
         <defaultGoal>install</defaultGoal>
