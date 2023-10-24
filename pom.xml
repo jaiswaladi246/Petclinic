@@ -80,8 +80,8 @@
         <docker.jib-maven-plugin.version>2.6.0</docker.jib-maven-plugin.version>
         <docker.image.prefix>springcommunity</docker.image.prefix>
 
-        <sonar.host.url>http://localhost:50670/</sonar.host.url>
-        <sonar.login>squ_4b51784446b606d16e5ff0f8f5f3bab33b444f9e</sonar.login>
+        <sonar.host.url>http://localhost:9000/</sonar.host.url>
+        <sonar.login>squ_0320a51befd27d3fd21a135b8b473e82c18f0f5d</sonar.login>
         
     </properties>
 
@@ -298,13 +298,13 @@
 	    <repository>
 	      <id>nexus</id>
 	      <name>Spring Framework Petclinic Nexus Repository</name>
-	      <url>http://localhost:58057/repository/Petclinic-releases/</url>
+	      <url>http://localhost:8081/repository/Petclinic-releases/</url>
 	    </repository>
 	    
 	    <snapshotRepository>
 	      <id>nexus</id>
 	      <name>Spring Framework Petclinic Nexus Repository</name>
-	      <url>http://localhost:58057/repository/Petclinic-snapshots/</url>
+	      <url>http://localhost:8081/repository/Petclinic-snapshots/</url>
 	    </snapshotRepository>
 	    
     </distributionManagement>
