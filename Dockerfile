@@ -11,7 +11,7 @@ COPY target/*.war ./app.war
 EXPOSE 8080
 
 # Define the command to run your application
-CMD ["java", "-jar", "petclinic.war"]
+CMD ["java", "-jar", "app.war"]
 
 #FROM openjdk:8
 #EXPOSE 8082
