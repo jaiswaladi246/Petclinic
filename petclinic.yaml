@@ -1,0 +1,50 @@
+# Deployments  Rolling Update
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+  namespace: dev
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+       maxSurge: 1
+       maxUnavailable: 1
+  minReadySeconds: 30   
+  selector:
+    matchLabels:
+      app: myapp 
+  template:
+    metadata:
+      name: myapp
+      labels:
+        app: myapp  
+    spec:
+      containers:
+      - name: myapp
+        image: charlesjatto/petclinic
+        ports:
+        - containerPort: 80 
+        resources:
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+            limits:
+              cpu: "100m"
+              memory: "256Mi"  # Fixed missing double quote here
+
+---
+kind: Service  
+apiVersion: v1  
+metadata:
+  name: myappsvc
+  namespace: dev 
+spec:
+  selector:
+    app: myapp   
+  type: NodePort 
+  ports:
+  - port: 8080
+    targetPort: 80
+    nodePort: 32000 #[30000-32676]
