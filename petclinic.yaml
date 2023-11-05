@@ -35,16 +35,16 @@ spec:
               memory: "256Mi"  # Fixed missing double quote here
 
 ---
-kind: Service  
-apiVersion: v1  
+kind: Service
+apiVersion: v1
 metadata:
   name: myappsvc
-  namespace: dev 
+  namespace: dev
 spec:
   selector:
-    app: myapp   
-  type: NodePort 
+    app: myapp
+  type: NodePort
   ports:
-  - port: 8082
-    targetPort: 80
-    nodePort: 32000 #[30000-32676]
+    - port: 8082
+      targetPort: 80
+      nodePort: 32000 # [30000-32676]
