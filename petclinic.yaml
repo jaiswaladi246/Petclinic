@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: myapp
-        image: charlesjatto/petclinic:v3
+        image: charlesjatto/petclinic:v2
         ports:
         - containerPort: 8082
         resources:
