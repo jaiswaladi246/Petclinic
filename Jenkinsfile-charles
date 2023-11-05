@@ -1,0 +1,73 @@
+pipeline {
+    agent any
+    environment {
+        // Define your Docker Hub credentials in Jenkins and reference them here.
+        DOCKERHUB_CREDENTIALS = credentials('DOCKERHUB_CREDENTIALS')
+        IMAGE_NAME = 'charlesjatto/petclinic:v3'
+        DOCKERFILE = 'Dockerfile' // Adjust to your Dockerfile name if it's different
+        // Reference the Maven tool by name
+        MAVEN_HOME = tool name: 'Maven 3.9.1'
+        KUBE_CONFIG = credentials('KUBE_CONFIG')
+    }
+    
+    stages {
+        stage('CodeClone') {
+            steps {
+                git branch: 'dev', credentialsId: 'GitCredential', url: 'https://github.com/cxharles/Petclinic.git'
+            }
+        }
+        
+        stage('Build'){
+            steps {
+                bat "mvn clean package -Dmaven.test.skip=true"
+            }
+        }
+        
+        stage('CodeCheck'){
+            steps {
+                bat "mvn sonar:sonar"
+            }
+        }
+        
+        stage('Artifacts'){
+            steps {
+                bat "mvn deploy"
+            }
+        }
+        
+        stage('DockerBuild'){
+            steps {
+                script {
+                    // Build the Docker image
+                    bat "docker build -t $IMAGE_NAME -f $DOCKERFILE ."
+                }
+            }
+        }
+        
+        stage('DockerPush'){
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS', passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USERNAME')]) {
+                    bat "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD" 
+                  }
+                    // Push the Docker image to Docker Hub
+                    bat "docker push $IMAGE_NAME"
+                }
+            }
+        }
+        stage('deployAppToK8S') {
+            steps {
+                // Deploy to Kubernetes using kubectl
+                script {
+                    def KUBE_CONFIG = credentials('KUBE_CONFIG')
+                    withCredentials([file(credentialsId: 'KUBE_CONFIG', variable: 'KUBECONFIG')]) {
+                        bat '''
+                            export KUBE_CONFIG=$KUBE_CONFIG
+                            kubectl apply -f petclinic.yaml
+                        '''
+                    }
+                }
+            }
+        }
+    }
+}
