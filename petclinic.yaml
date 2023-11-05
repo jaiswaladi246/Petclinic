@@ -25,7 +25,7 @@ spec:
       - name: myapp
         image: charlesjatto/petclinic
         ports:
-        - containerPort: 8080
+        - containerPort: 8082
         resources:
             requests:
               cpu: "100m"
@@ -45,6 +45,6 @@ spec:
     app: myapp   
   type: NodePort 
   ports:
-  - port: 8080
+  - port: 8082
     targetPort: 80
     nodePort: 32000 #[30000-32676]

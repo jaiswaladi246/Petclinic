@@ -8,7 +8,7 @@ WORKDIR /app
 COPY target/*.war ./app.war
 
 # Expose the port that the application will listen on (if needed)
-EXPOSE 8080
+EXPOSE 8082
 
 # Define the command to run your application
 CMD ["java", "-jar", "petclinic.war"]
