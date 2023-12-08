@@ -549,7 +549,7 @@
         <repository>
             <id>repository.spring.milestone</id>
             <name>Spring Milestone Repository</name>
-            <url>https://repo.spring.io/milestone</url>
+            <url>http://35.154.188.77:8081/repository/maven-releases/</url>
         </repository>
     </repositories>
 
