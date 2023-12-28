@@ -65,7 +65,13 @@ jobs:
 
     - name: Test with Maven
       run: mvn test
-
+      
+  Security_Check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
@@ -75,6 +81,8 @@ jobs:
         ignore-unfixed: true
         vuln-type: 'os,library'
         severity: 'CRITICAL,HIGH'
+
+        
     # - name: Build with Maven
     #   run: mvn -B package --file pom.xml
 
