@@ -1,0 +1,26 @@
+# Publish Github workflow artifacts 
+name: Publish Github actions artifacts 
+
+on: 
+  push:
+    branches: [main]
+jobs:
+  archive-build-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create a temporary artifact downloads Dir
+        run: mkdir downloads
+
+      - name: Add artifacts to publish to the temp Dir
+        run: | 
+          cd downloads
+          echo 'alpha' > alpha.html
+          echo 'bravo' > bravo.html
+          echo 'charlie' > charlie.html
+          cd ..
+
+      - name: Use the upload artificat Guthub Action
+        uses: actions/upload-artifact@v3
+        with: 
+          name: assets-for-download
+          path: downloads
