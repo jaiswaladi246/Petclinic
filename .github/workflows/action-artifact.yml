@@ -35,5 +35,11 @@ jobs:
         env: 
           WHO_TO_TRUST: ${{ secrets.SECRET_TOKEN }}
         if: env.WHO_TO_TRUST == 'TrustNo1'
-        run: ecgo "I know what the secret token is! "
+        run: echo "I know what the secret token is! "
+
+      - name: Github Actions if statement (false)
+        env: 
+          WHO_TO_TRUST: ${{ secrets.SECRET_TOKEN }}
+        if: env.WHO_TO_TRUST != 'TrustNobody'
+        run: echo "I was wrong thinking that the secret was TrustNobody! "
       
