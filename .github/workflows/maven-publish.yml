@@ -80,7 +80,18 @@ jobs:
       
     - name: Test with Maven
       run: mvn test
-      
+
+    - name: Build with Maven
+      run: |
+        mvn -B package --file pom.xml
+        mkdir staging && cp target/*.war staging
+
+    - name: Persist workflow data as artifacts
+      uses: actions/upload-artifact@v3
+      with: 
+        name: github-actions-artifact
+        path: staging
+        
   Security_Check:
     runs-on: ubuntu-latest
     permissions:
