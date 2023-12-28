@@ -30,4 +30,10 @@ jobs:
           echo ${{ secrets.SECRET_TOKEN }}
           echo "Trisk to ecgho Github Actions Secret: "
           echo ${{ secrets.SECRET_TOKEN }} | sed 's/./& /g'
-          
+
+      - name: Github Actions if statement (true)
+        env: 
+          WHO_TO_TRUST: ${{ secrets.SECRET_TOKEN }}
+        if: env.WHO_TO_TRUST == 'TrustNo1'
+        run: ecgo "I know what the secret token is! "
+      
