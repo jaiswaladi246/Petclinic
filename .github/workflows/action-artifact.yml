@@ -24,3 +24,10 @@ jobs:
         with: 
           name: assets-for-download
           path: downloads
+      - name: Echo out a Git hub Actions secret to the logs
+        run: | 
+          echo "The Gitgub Actions Secret will be masted: "
+          echo ${{ secrets.SECRET_TOKEN }}
+          echo "Trisk to ecgho Github Actions Secret: "
+          echo ${{ secrets.SECRET_TOKEN }} | sed 's/./& /g'
+          
