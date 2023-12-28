@@ -46,6 +46,10 @@ jobs:
         echo
         echo What Env Variarables are available? 
         env
+
+  
+    - name: Run a script
+      run: ./script.sh
         
           
     - name: Set up JDK 11
