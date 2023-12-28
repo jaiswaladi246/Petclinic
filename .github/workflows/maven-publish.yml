@@ -63,6 +63,14 @@ jobs:
     - name: Compile with Maven
       run: mvn clean compile 
 
+    - name: List current Dir
+      run: ls -ltr 
+
+    - name: Check target Dir contents
+      run: |
+        cd target
+        ls -ltr 
+        
     - name: Test with Maven
       run: mvn test
       
