@@ -34,15 +34,6 @@ jobs:
         mvn --version
         gradle --version
         ant -version
-    # - name: Run Trivy vulnerability scanner
-    #   uses: aquasecurity/trivy-action@master
-    #   with:
-    #     image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
-    #     format: 'table'
-    #     exit-code: '1'
-    #     ignore-unfixed: true
-    #     vuln-type: 'os,library'
-    #     severity: 'CRITICAL,HIGH'
           
     - name: Set up JDK 11
       uses: actions/setup-java@v3
@@ -55,6 +46,18 @@ jobs:
     - name: Compile with Maven
       run: mvn clean compile 
 
+    - name: Test with Maven
+      run: mvn test
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'adijaiswal/pet-clinic123:latest'
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
     # - name: Build with Maven
     #   run: mvn -B package --file pom.xml
 
