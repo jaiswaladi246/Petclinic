@@ -70,7 +70,14 @@ jobs:
       run: |
         cd target
         ls -ltr 
-        
+
+    - name: Set Up a cache for Maven
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+      
     - name: Test with Maven
       run: mvn test
       
