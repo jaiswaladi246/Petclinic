@@ -8,6 +8,8 @@ on:
   
 jobs:
   archive-build-artifacts:
+    environment:
+      name: dev
     runs-on: ubuntu-latest
     steps:
       - name: Create a temporary artifact downloads Dir
