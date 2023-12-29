@@ -12,6 +12,8 @@ on:
   
 jobs:
   build:
+    environment:
+      name: dev
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -95,6 +97,8 @@ jobs:
         path: staging
         
   Security_Check:
+    environment:
+      name: dev
     runs-on: ubuntu-latest
     permissions:
       contents: read
