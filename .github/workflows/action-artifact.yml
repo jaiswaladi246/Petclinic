@@ -16,7 +16,6 @@ jobs:
       - name: Add artifacts to publish to the temp Dir
         run: | 
           cd downloads
-          echo "creating files"
           echo 'alpha' > alpha.html
           echo 'bravo' > bravo.html
           echo 'charlie' > charlie.html
