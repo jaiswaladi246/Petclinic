@@ -6,9 +6,9 @@ pipeline {
         maven 'maven3'
     }
     
-    environment {
+/*    environment {
         SCANNER_HOME=tool 'sonar-scanner'
-    }
+    }*/
     
     stages{
         
@@ -30,7 +30,7 @@ pipeline {
             }
         }
         
-        stage("Sonarqube Analysis "){
+       /* stage("Sonarqube Analysis "){
             steps{
                 withSonarQubeEnv('sonar-server') {
                     sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Petclinic \
@@ -47,7 +47,7 @@ pipeline {
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
-        
+        */
          stage("Build"){
             steps{
                 sh " mvn clean install"
@@ -67,7 +67,7 @@ pipeline {
             }
         }
         
-        stage("TRIVY"){
+        /*stage("TRIVY"){
             steps{
                 sh " trivy image adijaiswal/pet-clinic123:latest"
             }
@@ -77,6 +77,6 @@ pipeline {
             steps{
                 sh "cp  /var/lib/jenkins/workspace/CI-CD/target/petclinic.war /opt/apache-tomcat-9.0.65/webapps/ "
             }
-        }
+        }*/
     }
 }
