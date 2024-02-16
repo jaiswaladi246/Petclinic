@@ -443,6 +443,11 @@
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>${jetty-maven-plugin.version}</version>
+                <configuration>
+                    <httpConnector>
+                        <port>8083</port>
+                    </httpConnector>
+                </configuration>
             </plugin>
 
             <plugin>
