@@ -443,6 +443,11 @@
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>${jetty-maven-plugin.version}</version>
+                <configuration>
+                    <httpConnector>
+                        <port>8083</port>
+                    </httpConnector>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -511,7 +516,7 @@
                 <db.script>mysql</db.script>
                 <jpa.database>MYSQL</jpa.database>
                 <jdbc.driverClassName>com.mysql.cj.jdbc.Driver</jdbc.driverClassName>
-                <jdbc.url>jdbc:mysql://localhost:3306/petclinic?useUnicode=true</jdbc.url>
+                <jdbc.url>jdbc:mysql://34.227.143.142:3306/petclinic?useUnicode=true</jdbc.url>
                 <jdbc.username>petclinic</jdbc.username>
                 <jdbc.password>petclinic</jdbc.password>
             </properties>
